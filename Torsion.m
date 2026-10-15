@@ -1,4 +1,4 @@
-MyFrobCommand := "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/sage/sage-9.5/local/lib/; /home/bommel/cap/controlledreduction-torsion/build/examples/myfrob";
+MyFrobCommand := "~/controlledreduction-torsion/build/examples/myfrob";
 
 // ANALYTIC RECONSTRUCTION
 
@@ -1236,13 +1236,14 @@ end procedure;
 
 // MAIN FUNCTION
 
-intrinsic TorsionSubgroup(J : SmallPrimes := PrimesInInterval(3,200), BigPrimes := PrimesInInterval(10^6, 10^6+600), MaxGroupSize := 1500, MaxNumberOfReconstructions := 2000, Heuristic := false)->SetEnum
+intrinsic TorsionSubgroup(J : SmallPrimes := PrimesInInterval(3,200), BigPrimes := PrimesInInterval(10^6, 10^6+600), MaxGroupSize := 1500, MaxNumberOfReconstructions := 2000, Heuristic := false, UsingWrapper := false)->SetEnum
 {Function that attempts to compute the torsion subgroup of J. Input are:
 * a set of small primes used for proving the completeness,
 * a set of big primes used for the CRT reconstruction method of finding torsion points,
 * the maximum size of the l-Sylow groups that will be considered in the algorithm,
-* the maximum number of steps taken in the CRT reconstruction step
-* a flag to call for the heuristic version of the algorithm that does not attempt to prove the output is correct.}
+* the maximum number of steps taken in the CRT reconstruction step,
+* a flag to call for the heuristic version of the algorithm that does not attempt to prove the output is correct,
+* a flag indicating whether the intrinsic has been called by the wrapper intrinsic Torsion.}
 	
 	// Step 0: initialise
 	SmallPrimes := [p : p in SmallPrimes | not(p in BadPrimes(J`C)) and (p ne 2)];
@@ -1316,7 +1317,11 @@ intrinsic TorsionSubgroup(J : SmallPrimes := PrimesInInterval(3,200), BigPrimes 
 		B := Max(Primes_l);
 		if (B lt 1000) then
 			if Heuristic eq false then
-				return {}, {}, {}; // Abandon attempt.
+				if UsingWrapper then
+					return {}, {}, {}; // Abandon attempt.
+				else
+					error "Cannot provably find torsion subgroup. Consider changing the parameters.";
+				end if;
 			end if;
 		end if;
 		lTorsionOverClosure_B := {}; // Their reductions module a big prime
@@ -1379,7 +1384,11 @@ intrinsic TorsionSubgroup(J : SmallPrimes := PrimesInInterval(3,200), BigPrimes 
 						end if;
 						if #PotentialDivisors eq 0 and Max(BigPrimes) lt 10^6 + 1000 then
 							if Heuristic eq false then				
-								return {}, {}, {}; // Abandon try
+								if UsingWrapper then
+									return {}, {}, {}; // Abandon attempt.
+								else
+									error "Cannot provably find torsion subgroup. Consider changing the parameters.";
+								end if;
 							end if;
 						end if;
 					end if;
@@ -1540,7 +1549,11 @@ intrinsic TorsionSubgroup(J : SmallPrimes := PrimesInInterval(3,200), BigPrimes 
 			if not(SomethingChanged) then	
 				print "Nothing changed for prime", l;	
 				if Heuristic eq false then		
-					return {}, {}, {};
+					if UsingWrapper then
+						return {}, {}, {}; // Abandon attempt.
+					else
+						error "Cannot provably find torsion subgroup. Consider changing the parameters.";
+					end if;
 				else
 					break;
 				end if;
