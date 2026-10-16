@@ -1604,7 +1604,7 @@ intrinsic Torsion(C : SkipFirstThree := false, CatchError := false, Heuristic :=
 		
 		for P in Primes do
 			if CatchError eq false then
-				T, a, b := TorsionSubgroup(J : SmallPrimes := P[1], BigPrimes := P[2], MaxNumberOfReconstructions := P[3], Heuristic := Heuristic);
+				T, a, b := TorsionSubgroup(J : SmallPrimes := P[1], BigPrimes := P[2], MaxNumberOfReconstructions := P[3], Heuristic := Heuristic, UsingWrapper);
 					if a eq {} then
 						print "Attempt failed, retrying with bigger primes (at most three times)";
 						continue P;
@@ -1612,7 +1612,7 @@ intrinsic Torsion(C : SkipFirstThree := false, CatchError := false, Heuristic :=
 					return J, T, a, b;
 			else				
 				try
-					T, a, b := TorsionSubgroup(J : SmallPrimes := P[1], BigPrimes := P[2], MaxNumberOfReconstructions := P[3], Heuristic := Heuristic);
+					T, a, b := TorsionSubgroup(J : SmallPrimes := P[1], BigPrimes := P[2], MaxNumberOfReconstructions := P[3], Heuristic := Heuristic, UsingWrapper);
 					if a eq {} then
 						print "Attempt failed, retrying with bigger primes (at most three times)";
 						continue P;
